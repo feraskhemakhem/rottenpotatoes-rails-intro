@@ -3,12 +3,18 @@ class MoviesController < ApplicationController
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
+    # for part 2
+    @checked_Ratings = @all_ratings
     # will render app/views/movies/show.<extension> by default
   end
 
   def index
+    @all_ratings = Movie.ratings # retrieves all movie ratings for part 2
     @sort = params[:sort]
-    @movies = Movie.all.order(@sort)
+    # if there are no selected ratings then choose all by default (otherwise get the keys of the current ratings hash)
+    # also make a variable so that the checklist can check
+    @checked_ratings = params[:ratings].nil? ? @all_ratings : params[:ratings].keys
+    @movies = Movie.where(rating: @checked_ratings).order(@sort)
   end
 
   def new
@@ -23,6 +29,11 @@ class MoviesController < ApplicationController
 
   def edit
     @movie = Movie.find params[:id]
+  end
+  
+  # part 2: returns the rating of a movie
+  def rat
+    @movie.rating
   end
 
   def update

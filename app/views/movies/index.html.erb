@@ -1,8 +1,17 @@
 <!--  This file is app/views/movies/index.html.erb -->
 <h2>All Movies</h2>
 
-<%#  Part 1: Start here... %>
+<!--Part 2-->
+<%= form_tag movies_path, id: "ratings_form", :method => "get" do %>
+  <% @all_ratings.each do |rating| %>
+    <%= rating %>
+    <!--based on reference: https://api.rubyonrails.org/v7.0.2.2/classes/ActionView/Helpers/FormTagHelper.html#method-i-check_box_tag-->
+    <%= check_box_tag "ratings[#{rating}]", "", (@checked_ratings.include? rating), :id => "ratings_#{rating}" %>
+  <% end %>
+  <%= submit_tag "Refresh", :class => "btn btn-primary", :id => "ratings_submit" %>
+<% end %>
 
+<%#  Part 1: Start here... %>
 <table class="table table-striped col-md-12" id="movies">
   <thead>
     <tr>
