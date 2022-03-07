@@ -4,17 +4,34 @@ class MoviesController < ApplicationController
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
     # for part 2
-    @checked_Ratings = @all_ratings
+    # @checked_ratings = @all_ratings
     # will render app/views/movies/show.<extension> by default
   end
 
   def index
     @all_ratings = Movie.ratings # retrieves all movie ratings for part 2
-    @sort = params[:sort]
-    # if there are no selected ratings then choose all by default (otherwise get the keys of the current ratings hash)
-    # also make a variable so that the checklist can check
-    @checked_ratings = params[:ratings].nil? ? @all_ratings : params[:ratings].keys
-    @movies = Movie.where(rating: @checked_ratings).order(@sort)
+    # "Therefore, if you find that the incoming URI is lacking the right params[] and you're forced to fill them in from the session[]"
+    @sort = params[:sort] || session[:sort]
+    # for part 3
+    # save the last session in session hash (or all ratings as a default)
+    # Hash[@all_ratings.map {|k| [k, []]}]
+    session[:ratings] = session[:ratings] || {'G'=>'', 'PG'=>'', 'PG-13'=>'', 'R'=>''}
+    
+    # part 2/3: if unchecked, use session[] hash (part 3)
+    @checked_ratings = params[:ratings] || session[:ratings]
+    
+    # part 3: "save" this session
+    session[:sort] = @sort
+    session[:ratings] = @checked_ratings
+
+    # part 2: only get movies in the checked ratings
+    @movies = Movie.where(rating: session[:ratings].keys).order(session[:sort])
+    
+    # part 3: edge case: if params and session mismatch because 
+    if (params[:sort].nil? and !(session[:sort].nil?)) or (params[:ratings].nil? and !(session[:ratings].nil?))
+      flash.keep
+      redirect_to movies_path(sort: session[:sort], ratings: session[:ratings])
+    end
   end
 
   def new

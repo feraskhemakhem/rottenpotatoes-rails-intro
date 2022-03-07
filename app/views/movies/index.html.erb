@@ -6,7 +6,7 @@
   <% @all_ratings.each do |rating| %>
     <%= rating %>
     <!--based on reference: https://api.rubyonrails.org/v7.0.2.2/classes/ActionView/Helpers/FormTagHelper.html#method-i-check_box_tag-->
-    <%= check_box_tag "ratings[#{rating}]", "", (@checked_ratings.include? rating), :id => "ratings_#{rating}" %>
+    <%= check_box_tag "ratings[#{rating}]", "", (@checked_ratings.keys.include? rating), :id => "ratings_#{rating}" %>
   <% end %>
   <%= submit_tag "Refresh", :class => "btn btn-primary", :id => "ratings_submit" %>
 <% end %>
